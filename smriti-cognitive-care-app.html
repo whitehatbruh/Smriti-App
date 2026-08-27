@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smriti — Cognitive Care Companion</title>
+<style>
+  :root{
+    --bg: #FBF7F0;
+    --panel: #FFFFFF;
+    --ink: #2E2A22;
+    --ink-soft: #6B6354;
+    --clay: #B5652D;
+    --clay-dark: #8A4A1E;
+    --tea: #4F7A5C;
+    --tea-light: #E4EFE6;
+    --sun: #E3A83B;
+    --sun-light: #FBEED1;
+    --sky: #3E708C;
+    --sky-light: #E1EDF2;
+    --alert: #B84A3E;
+    --alert-light: #F7E4E1;
+    --border: #E5DCC9;
+    --radius: 18px;
+    font-size: 20px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: 'Segoe UI', 'Noto Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height:100vh;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:1.5rem 1.25rem 4rem;}
+
+  /* header */
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
+  .brand{display:flex;align-items:center;gap:0.75rem;}
+  .brand-mark{
+    width:52px;height:52px;border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--sun) 0%, var(--clay) 70%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px; color:#fff; font-weight:600;
+  }
+  .brand h1{font-size:1.5rem;margin:0;font-weight:700;letter-spacing:0.01em;}
+  .brand p{margin:0;color:var(--ink-soft);font-size:0.95rem;}
+
+  .lang-select{
+    display:flex;gap:0.4rem;background:var(--panel);border:1px solid var(--border);
+    border-radius:999px;padding:4px;
+  }
+  .lang-select button{
+    border:none;background:transparent;padding:0.5rem 0.9rem;border-radius:999px;
+    font-size:0.95rem;color:var(--ink-soft);cursor:pointer;font-weight:600;
+  }
+  .lang-select button.active{background:var(--clay);color:#fff;}
+
+  nav{display:flex;gap:0.6rem;margin-bottom:1.75rem;flex-wrap:wrap;}
+  nav button{
+    flex:1 1 auto;min-width:140px;
+    padding:0.9rem 1rem;border-radius:14px;border:2px solid transparent;
+    background:var(--panel);color:var(--ink);font-size:1.05rem;font-weight:600;
+    cursor:pointer; box-shadow:0 1px 0 var(--border);
+  }
+  nav button.active{border-color:var(--clay);color:var(--clay-dark);background:#fff;}
+
+  .panel{
+    background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    padding:1.75rem;margin-bottom:1.5rem;
+  }
+  .panel h2{margin-top:0;font-size:1.3rem;}
+  .muted{color:var(--ink-soft);}
+
+  /* home */
+  .greeting{font-size:1.6rem;font-weight:700;margin-bottom:0.25rem;}
+  .greeting-sub{color:var(--ink-soft);margin-bottom:1.5rem;}
+
+  .reminder-list{display:flex;flex-direction:column;gap:0.75rem;}
+  .reminder{
+    display:flex;align-items:center;gap:1rem;padding:1rem 1.1rem;border-radius:14px;
+    background:var(--tea-light);border:1px solid #cfe3d3;
+  }
+  .reminder.water{background:var(--sky-light);border-color:#c7dbe4;}
+  .reminder.appt{background:var(--sun-light);border-color:#ecd7a8;}
+  .reminder-icon{
+    width:44px;height:44px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    background:#fff;
+  }
+  .reminder-text{flex:1;}
+  .reminder-title{font-weight:700;font-size:1.05rem;}
+  .reminder-time{color:var(--ink-soft);font-size:0.9rem;}
+  .reminder button{
+    border:none;background:var(--tea);color:#fff;padding:0.55rem 1rem;border-radius:999px;
+    font-weight:700;cursor:pointer;font-size:0.95rem;
+  }
+  .reminder.water button{background:var(--sky);}
+  .reminder.appt button{background:#C08B29;}
+  .reminder.done{opacity:0.55;}
+  .reminder.done button{background:var(--ink-soft);}
+
+  .game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-top:0.5rem;}
+  .game-card{
+    text-align:left;border:1px solid var(--border);border-radius:16px;padding:1.25rem;
+    background:linear-gradient(180deg,#fff, #fff);cursor:pointer;font-family:inherit;
+  }
+  .game-card .icon{font-size:2rem;margin-bottom:0.5rem;display:block;}
+  .game-card h3{margin:0 0 0.25rem;font-size:1.15rem;}
+  .game-card p{margin:0;color:var(--ink-soft);font-size:0.92rem;}
+  .game-card.match{border-top:5px solid var(--clay);}
+  .game-card.pattern{border-top:5px solid var(--sky);}
+  .game-card.routine{border-top:5px solid var(--tea);}
+
+  /* shared game controls */
+  .game-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;}
+  .pill{background:var(--tea-light);color:#31573D;padding:0.4rem 0.9rem;border-radius:999px;font-weight:700;font-size:0.9rem;}
+  .btn{
+    border:1px solid var(--border);background:#fff;padding:0.6rem 1.1rem;border-radius:12px;
+    font-weight:600;cursor:pointer;font-size:0.95rem;color:var(--ink);
+  }
+  .btn.primary{background:var(--clay);color:#fff;border-color:var(--clay);}
+  .btn.back{background:transparent;border:none;color:var(--ink-soft);padding-left:0;}
+
+  .msg{min-height:1.6rem;font-weight:700;margin-bottom:0.75rem;}
+  .msg.good{color:var(--tea);}
+  .msg.tryagain{color:var(--clay-dark);}
+
+  /* memory match */
+  .mm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;}
+  .mm-card{
+    aspect-ratio:1;border-radius:14px;border:1px solid var(--border);
+    background:var(--panel); display:flex;align-items:center;justify-content:center;
+    font-size:2rem;cursor:pointer;
+  }
+  .mm-card.hidden-face{background:repeating-linear-gradient(135deg, #F0E6D2, #F0E6D2 10px, #EADFC7 10px, #EADFC7 20px);}
+  .mm-card.matched{background:var(--tea-light);border-color:var(--tea);}
+  .mm-card:disabled{cursor:default;}
+
+  /* pattern game */
+  .pat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:420px;margin:0 auto;}
+  .pat-cell{
+    aspect-ratio:1;border-radius:16px;border:1px solid var(--border);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:2.2rem;
+  }
+  .pat-cell.c0{background:var(--sun-light);}
+  .pat-cell.c1{background:var(--sky-light);}
+  .pat-cell.c2{background:var(--tea-light);}
+  .pat-cell.c3{background:#F3E1EE;}
+  .pat-cell.lit{filter:brightness(0.85);transform:scale(0.96);box-shadow:0 0 0 4px rgba(0,0,0,0.08) inset;}
+  .pat-cell:disabled{cursor:default;}
+
+  /* routine game */
+  .routine-target{
+    display:flex;flex-wrap:wrap;gap:0.6rem;min-height:64px;border:2px dashed var(--border);
+    border-radius:14px;padding:0.75rem;margin-bottom:1rem;background:#FCFAF4;
+  }
+  .routine-source{display:flex;flex-wrap:wrap;gap:0.6rem;}
+  .rt-chip{
+    display:flex;align-items:center;gap:0.4rem;padding:0.6rem 0.9rem;border-radius:999px;
+    border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:600;font-size:0.95rem;
+  }
+  .rt-chip.placed{opacity:0.4;cursor:default;}
+  .rt-chip span.n{
+    width:22px;height:22px;border-radius:50%;background:var(--tea);color:#fff;
+    display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;
+  }
+
+  /* caregiver dashboard */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.9rem;margin-bottom:1.5rem;}
+  .stat-card{background:#FCFAF4;border:1px solid var(--border);border-radius:14px;padding:1rem;}
+  .stat-card .num{font-size:1.6rem;font-weight:700;color:var(--clay-dark);}
+  .stat-card .lbl{color:var(--ink-soft);font-size:0.85rem;}
+  table.log{width:100%;border-collapse:collapse;font-size:0.95rem;}
+  table.log th{text-align:left;color:var(--ink-soft);font-weight:600;padding:0.4rem 0.5rem;border-bottom:1px solid var(--border);}
+  table.log td{padding:0.55rem 0.5rem;border-bottom:1px solid var(--border);}
+  .badge{padding:0.2rem 0.6rem;border-radius:999px;font-size:0.8rem;font-weight:700;}
+  .badge.up{background:var(--tea-light);color:#2E5238;}
+  .badge.flat{background:var(--sun-light);color:#7A5416;}
+  .badge.down{background:var(--alert-light);color:#7A2E24;}
+  .alert-box{display:flex;gap:0.8rem;align-items:flex-start;background:var(--alert-light);border:1px solid #E7C6C0;border-radius:14px;padding:1rem;margin-bottom:1rem;}
+
+  .offline-note{display:flex;align-items:center;gap:0.5rem;color:var(--ink-soft);font-size:0.85rem;margin-top:2rem;justify-content:center;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--tea);}
+
+  @media (max-width:520px){
+    :root{font-size:18px;}
+    .mm-grid{grid-template-columns:repeat(3,1fr);}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">स</div>
+      <div>
+        <h1 id="appTitle">Smriti</h1>
+        <p id="appSub">Cognitive care companion</p>
+      </div>
+    </div>
+    <div class="lang-select" id="langSelect">
+      <button data-lang="en" class="active">English</button>
+      <button data-lang="hi">हिंदी</button>
+      <button data-lang="as">অসমীয়া</button>
+    </div>
+  </header>
+
+  <nav id="mainNav">
+    <button data-view="home" class="active" id="navHome">Home</button>
+    <button data-view="games" id="navGames">Games</button>
+    <button data-view="caregiver" id="navCaregiver">Caregiver view</button>
+  </nav>
+
+  <!-- HOME VIEW -->
+  <section id="view-home">
+    <div class="panel">
+      <div class="greeting" id="greetingText">Good morning, Anima</div>
+      <div class="greeting-sub" id="greetingSub">Here is what's on for today</div>
+
+      <div class="reminder-list" id="reminderList"></div>
+    </div>
+
+    <div class="panel">
+      <h2 id="quickPlayTitle">Quick play</h2>
+      <p class="muted" id="quickPlaySub">A short game keeps the mind active. Pick one to begin.</p>
+      <div class="game-grid" id="homeGameGrid"></div>
+    </div>
+  </section>
+
+  <!-- GAMES VIEW -->
+  <section id="view-games" style="display:none;">
+    <div class="panel" id="gamesMenuPanel">
+      <h2 id="gamesTitle">Choose a game</h2>
+      <div class="game-grid" id="gamesGrid"></div>
+    </div>
+
+    <div class="panel" id="mmPanel" style="display:none;">
+      <button class="btn back" data-back="games">&larr; <span data-i="back">Back</span></button>
+      <div class="game-header">
+        <h2 style="margin:0;" data-i="mmTitle">Picture pairs</h2>
+        <div style="display:flex;gap:0.6rem;align-items:center;">
+          <span class="pill" id="mmLevelPill">Level: gentle</span>
+          <button class="btn" id="mmRestart" data-i="newGame">New game</button>
+        </div>
+      </div>
+      <div class="msg" id="mmMsg"></div>
+      <div class="mm-grid" id="mmGrid"></div>
+    </div>
+
+    <div class="panel" id="patPanel" style="display:none;">
+      <button class="btn back" data-back="games">&larr; <span data-i="back">Back</span></button>
+      <div class="game-header">
+        <h2 style="margin:0;" data-i="patTitle">Follow the sequence</h2>
+        <div style="display:flex;gap:0.6rem;align-items:center;">
+          <span class="pill" id="patLevelPill">Round 1</span>
+          <button class="btn" id="patRestart" data-i="newGame">New game</button>
+        </div>
+      </div>
+      <div class="msg" id="patMsg"></div>
+      <div style="text-align:center;margin-bottom:1rem;">
+        <button class="btn primary" id="patPlayBtn" data-i="watch">Watch the pattern</button>
+      </div>
+      <div class="pat-grid" id="patGrid"></div>
+    </div>
+
+    <div class="panel" id="rtPanel" style="display:none;">
+      <button class="btn back" data-back="games">&larr; <span data-i="back">Back</span></button>
+      <div class="game-header">
+        <h2 style="margin:0;" data-i="rtTitle">Morning routine</h2>
+        <button class="btn" id="rtRestart" data-i="newGame">New game</button>
+      </div>
+      <div class="msg" id="rtMsg" data-i="rtInstruction">Tap each step in the order you do it every morning.</div>
+      <div class="routine-target" id="rtTarget"></div>
+      <div class="routine-source" id="rtSource"></div>
+    </div>
+  </section>
+
+  <!-- CAREGIVER VIEW -->
+  <section id="view-caregiver" style="display:none;">
+    <div class="panel">
+      <h2 id="cgTitle">Progress overview</h2>
+      <p class="muted" id="cgSub">Patient: Anima Boro · Guwahati, Assam</p>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="num" id="statSessions">0</div><div class="lbl" id="lblSessions">Sessions today</div></div>
+        <div class="stat-card"><div class="num" id="statAccuracy">—</div><div class="lbl" id="lblAccuracy">Average accuracy</div></div>
+        <div class="stat-card"><div class="num" id="statStreak">3</div><div class="lbl" id="lblStreak">Day streak</div></div>
+        <div class="stat-card"><div class="num" id="statLevel">Gentle</div><div class="lbl" id="lblLevel">Current difficulty</div></div>
+      </div>
+
+      <div class="alert-box" id="alertBox" style="display:none;">
+        <div style="font-size:1.4rem;">⚠️</div>
+        <div>
+          <strong id="alertTitle">Lower engagement noticed</strong>
+          <div class="muted" id="alertBody" style="font-size:0.9rem;">Fewer games played than usual over the last 2 days. Consider a friendly check-in call.</div>
+        </div>
+      </div>
+
+      <h3 id="logTitle" style="margin-bottom:0.5rem;">Activity log</h3>
+      <table class="log">
+        <thead>
+          <tr><th id="colGame">Game</th><th id="colResult">Result</th><th id="colTrend">Trend</th></tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="offline-note"><span class="dot"></span><span id="offlineNote">Working offline — data will sync when connected</span></div>
+</div>
+
+<script>
+/* ---------- i18n ---------- */
+const dict = {
+  en: {
+    appSub:"Cognitive care companion", navHome:"Home", navGames:"Games", navCaregiver:"Caregiver view",
+    greeting:"Good morning, Anima", greetingSub:"Here is what's on for today",
+    quickPlayTitle:"Quick play", quickPlaySub:"A short game keeps the mind active. Pick one to begin.",
+    gamesTitle:"Choose a game",
+    back:"Back", newGame:"New game", watch:"Watch the pattern",
+    mmTitle:"Picture pairs", mmDesc:"Find the matching pairs", mmTries:"Tries",
+    patTitle:"Follow the sequence", patDesc:"Watch, then repeat the pattern", patRound:"Round",
+    rtTitle:"Morning routine", rtDesc:"Put the day's steps in order", rtInstruction:"Tap each step in the order you do it every morning.",
+    cgTitle:"Progress overview", cgSub:"Patient: Anima Boro · Guwahati, Assam",
+    lblSessions:"Sessions today", lblAccuracy:"Average accuracy", lblStreak:"Day streak", lblLevel:"Current difficulty",
+    logTitle:"Activity log", colGame:"Game", colResult:"Result", colTrend:"Trend",
+    med:"Morning medicine", medTime:"8:00 AM", water:"Drink a glass of water", waterTime:"Every 2 hours", appt:"Doctor visit", apptTime:"Thursday, 4:00 PM",
+    markDone:"Mark done", done:"Done",
+    goodMatch:"Nicely done, that's a match.", tryAgain:"Good try, take another look.", allMatched:"Well done, every pair found.",
+    patCorrect:"Well remembered.", patWrong:"Not quite — watch again.", patNext:"Lovely, one step longer now.",
+    rtGood:"That's right, well placed.", rtDone:"Wonderful, the whole routine is in order.",
+    offline:"Working offline — data will sync when connected"
+  },
+  hi: {
+    appSub:"संज्ञानात्मक देखभाल साथी", navHome:"होम", navGames:"खेल", navCaregiver:"देखभालकर्ता दृश्य",
+    greeting:"सुप्रभात, अनिमा", greetingSub:"आज के लिए यह है",
+    quickPlayTitle:"जल्दी खेलें", quickPlaySub:"एक छोटा खेल मन को सक्रिय रखता है। शुरू करने के लिए एक चुनें।",
+    gamesTitle:"एक खेल चुनें",
+    back:"वापस", newGame:"नया खेल", watch:"पैटर्न देखें",
+    mmTitle:"चित्र जोड़े", mmDesc:"मिलते-जुलते जोड़े खोजें", mmTries:"प्रयास",
+    patTitle:"क्रम का पालन करें", patDesc:"देखें, फिर दोहराएँ", patRound:"राउंड",
+    rtTitle:"सुबह की दिनचर्या", rtDesc:"दिन के चरणों को क्रम में लगाएं", rtInstruction:"हर सुबह जिस क्रम में करते हैं, उसी क्रम में टैप करें।",
+    cgTitle:"प्रगति अवलोकन", cgSub:"रोगी: अनिमा बोरो · गुवाहाटी, असम",
+    lblSessions:"आज के सत्र", lblAccuracy:"औसत सटीकता", lblStreak:"दिन की लकीर", lblLevel:"वर्तमान कठिनाई",
+    logTitle:"गतिविधि लॉग", colGame:"खेल", colResult:"परिणाम", colTrend:"रुझान",
+    med:"सुबह की दवा", medTime:"8:00 AM", water:"एक गिलास पानी पिएं", waterTime:"हर 2 घंटे", appt:"डॉक्टर विज़िट", apptTime:"गुरुवार, 4:00 PM",
+    markDone:"पूर्ण चिह्नित करें", done:"पूर्ण",
+    goodMatch:"बहुत बढ़िया, यह जोड़ी मिल गई।", tryAgain:"अच्छा प्रयास, फिर से देखें।", allMatched:"शाबाश, सभी जोड़े मिल गए।",
+    patCorrect:"बहुत अच्छी याददाश्त।", patWrong:"थोड़ा गलत — फिर से देखें।", patNext:"सुंदर, अब एक कदम और लंबा।",
+    rtGood:"सही है, बढ़िया लगाया।", rtDone:"वाह, पूरी दिनचर्या क्रम में है।",
+    offline:"ऑफ़लाइन काम कर रहा है — जुड़ने पर डेटा सिंक होगा"
+  },
+  as: {
+    appSub:"চিন্তা-শক্তি যত্ন সঙ্গী", navHome:"হোম", navGames:"খেল", navCaregiver:"যত্নকাৰীৰ দৃশ্য",
+    greeting:"শুভ ৰাতিপুৱা, অনিমা", greetingSub:"আজিৰ বাবে এইবোৰ আছে",
+    quickPlayTitle:"শীঘ্ৰে খেলক", quickPlaySub:"এটা চুটি খেলে মনটো সক্ৰিয় ৰাখে। আৰম্ভ কৰিবলৈ এটা বাছক।",
+    gamesTitle:"এটা খেল বাছক",
+    back:"পিছলৈ", newGame:"নতুন খেল", watch:"আৰ্হি চাওক",
+    mmTitle:"ছবি যোৰ", mmDesc:"মিলা যোৰ বিচাৰক", mmTries:"চেষ্টা",
+    patTitle:"ক্ৰম অনুসৰণ কৰক", patDesc:"চাওক, তাৰ পিছত পুনৰাবৃত্তি কৰক", patRound:"ৰাউণ্ড",
+    rtTitle:"ৰাতিপুৱাৰ নিয়ম", rtDesc:"দিনৰ পদক্ষেপবোৰ ক্ৰমত ৰাখক", rtInstruction:"প্ৰতিদিনে যি ক্ৰমত কৰে সেই ক্ৰমতে টিপক।",
+    cgTitle:"অগ্ৰগতিৰ অৱলোকন", cgSub:"ৰোগী: অনিমা বড়ো · গুৱাহাটী, অসম",
+    lblSessions:"আজিৰ ছেছন", lblAccuracy:"গড় শুদ্ধতা", lblStreak:"দিনৰ ধাৰা", lblLevel:"বৰ্তমান কঠিনতা",
+    logTitle:"কাৰ্যকলাপ লগ", colGame:"খেল", colResult:"ফলাফল", colTrend:"প্ৰৱণতা",
+    med:"ৰাতিপুৱাৰ ঔষধ", medTime:"8:00 AM", water:"এক গিলাচ পানী খাওক", waterTime:"প্ৰতি ২ ঘণ্টাত", appt:"ডাক্তৰ চোৱা", apptTime:"বৃহস্পতিবাৰ, 4:00 PM",
+    markDone:"সম্পূৰ্ণ চিহ্নিত কৰক", done:"সম্পূৰ্ণ",
+    goodMatch:"বহুত ভাল, যোৰ পোৱা গ'ল।", tryAgain:"ভাল চেষ্টা, পুনৰ চাওক।", allMatched:"বাহ, সকলো যোৰ পোৱা গ'ল।",
+    patCorrect:"বহুত ভাল মনত ৰাখিছে।", patWrong:"অলপ ভুল — পুনৰ চাওক।", patNext:"সুন্দৰ, এতিয়া এটা পদক্ষেপ দীঘল।",
+    rtGood:"শুদ্ধ, ভালদৰে থলে।", rtDone:"বাহ, গোটেই নিয়মটো ক্ৰমত আছে।",
+    offline:"অফলাইনত কাম কৰি আছে — সংযোগ হ'লে ডেটা ছিংক হ'ব"
+  }
+};
+let lang = 'en';
+function t(key){ return (dict[lang] && dict[lang][key]) || dict.en[key] || key; }
+
+function applyStaticText(){
+  document.getElementById('appSub').textContent = t('appSub');
+  document.getElementById('navHome').textContent = t('navHome');
+  document.getElementById('navGames').textContent = t('navGames');
+  document.getElementById('navCaregiver').textContent = t('navCaregiver');
+  document.getElementById('greetingText').textContent = t('greeting');
+  document.getElementById('greetingSub').textContent = t('greetingSub');
+  document.getElementById('quickPlayTitle').textContent = t('quickPlayTitle');
+  document.getElementById('quickPlaySub').textContent = t('quickPlaySub');
+  document.getElementById('gamesTitle').textContent = t('gamesTitle');
+  document.getElementById('cgTitle').textContent = t('cgTitle');
+  document.getElementById('cgSub').textContent = t('cgSub');
+  document.getElementById('lblSessions').textContent = t('lblSessions');
+  document.getElementById('lblAccuracy').textContent = t('lblAccuracy');
+  document.getElementById('lblStreak').textContent = t('lblStreak');
+  document.getElementById('lblLevel').textContent = t('lblLevel');
+  document.getElementById('logTitle').textContent = t('logTitle');
+  document.getElementById('colGame').textContent = t('colGame');
+  document.getElementById('colResult').textContent = t('colResult');
+  document.getElementById('colTrend').textContent = t('colTrend');
+  document.getElementById('offlineNote').textContent = t('offline');
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    el.textContent = t(el.getAttribute('data-i'));
+  });
+  buildGameCards();
+  buildReminders();
+  renderLog();
+}
+
+/* ---------- nav ---------- */
+document.getElementById('langSelect').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  lang = b.dataset.lang;
+  document.querySelectorAll('#langSelect button').forEach(x=>x.classList.toggle('active', x===b));
+  applyStaticText();
+});
+
+const views = ['home','games','caregiver'];
+function showView(v){
+  views.forEach(name=>{
+    document.getElementById('view-'+name).style.display = (name===v)?'':'none';
+  });
+  document.querySelectorAll('#mainNav button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  if(v==='games') showGamesMenu();
+}
+document.getElementById('mainNav').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  showView(b.dataset.view);
+});
+
+function showGamesMenu(){
+  ['gamesMenuPanel','mmPanel','patPanel','rtPanel'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('gamesMenuPanel').style.display='';
+}
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click', ()=>showGamesMenu()));
+
+function openGame(id){
+  showView('games');
+  ['gamesMenuPanel','mmPanel','patPanel','rtPanel'].forEach(x=>document.getElementById(x).style.display='none');
+  document.getElementById(id+'Panel').style.display='';
+  if(id==='mm') setupMM();
+  if(id==='pat') setupPAT();
+  if(id==='rt') setupRT();
+}
+
+/* ---------- game cards (home + menu) ---------- */
+const gameDefs = [
+  {id:'mm', cls:'match', icon:'🧩', titleKey:'mmTitle', descKey:'mmDesc'},
+  {id:'pat', cls:'pattern', icon:'✨', titleKey:'patTitle', descKey:'patDesc'},
+  {id:'rt', cls:'routine', icon:'☀️', titleKey:'rtTitle', descKey:'rtDesc'}
+];
+function buildGameCards(){
+  const html = gameDefs.map(g=>`
+    <button class="game-card ${g.cls}" data-game="${g.id}">
+      <span class="icon">${g.icon}</span>
+      <h3>${t(g.titleKey)}</h3>
+      <p>${t(g.descKey)}</p>
+    </button>`).join('');
+  document.getElementById('homeGameGrid').innerHTML = html;
+  document.getElementById('gamesGrid').innerHTML = html;
+  document.querySelectorAll('[data-game]').forEach(el=>{
+    el.addEventListener('click', ()=>openGame(el.dataset.game));
+  });
+}
+
+/* ---------- reminders ---------- */
+let reminderState = {med:false, water:false, appt:false};
+function buildReminders(){
+  const items = [
+    {key:'med', cls:'', icon:'💊', title:t('med'), time:t('medTime')},
+    {key:'water', cls:'water', icon:'💧', title:t('water'), time:t('waterTime')},
+    {key:'appt', cls:'appt', icon:'🩺', title:t('appt'), time:t('apptTime')}
+  ];
+  document.getElementById('reminderList').innerHTML = items.map(it=>{
+    const isDone = reminderState[it.key];
+    return `<div class="reminder ${it.cls} ${isDone?'done':''}" data-key="${it.key}">
+      <div class="reminder-icon">${it.icon}</div>
+      <div class="reminder-text">
+        <div class="reminder-title">${it.title}</div>
+        <div class="reminder-time">${it.time}</div>
+      </div>
+      <button data-remind="${it.key}">${isDone? t('done') : t('markDone')}</button>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-remind]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      reminderState[b.dataset.remind] = true;
+      buildReminders();
+    });
+  });
+}
+
+/* ---------- activity log / adaptive difficulty ---------- */
+let sessionLog = [];
+let difficultyScore = 0; // -ve harder to lower, +ve raises difficulty
+function logResult(gameKey, accuracyPct){
+  sessionLog.unshift({game:gameKey, accuracy:accuracyPct, ts:Date.now()});
+  difficultyScore += (accuracyPct>=80)?1:(accuracyPct<50?-1:0);
+  renderStats();
+  renderLog();
+}
+function currentLevel(){
+  if(difficultyScore>=2) return {en:'Focused', hi:'केंद्रित', as:'কেন্দ্ৰীভূত', pairs:8, patLen:5};
+  if(difficultyScore<=-2) return {en:'Gentle+', hi:'सौम्य+', as:'কোমল+', pairs:4, patLen:2};
+  return {en:'Gentle', hi:'सौम्य', as:'কোমল', pairs:6, patLen:3};
+}
+function renderStats(){
+  document.getElementById('statSessions').textContent = sessionLog.length;
+  const avg = sessionLog.length? Math.round(sessionLog.reduce((a,b)=>a+b.accuracy,0)/sessionLog.length) : null;
+  document.getElementById('statAccuracy').textContent = avg!==null ? avg+'%' : '—';
+  const lvl = currentLevel();
+  document.getElementById('statLevel').textContent = lvl[lang] || lvl.en;
+  document.getElementById('alertBox').style.display = (sessionLog.length===0) ? '' : 'none';
+}
+function renderLog(){
+  const nameMap = {mm:t('mmTitle'), pat:t('patTitle'), rt:t('rtTitle')};
+  document.getElementById('logBody').innerHTML = sessionLog.slice(0,8).map((r,i)=>{
+    const prev = sessionLog[i+1];
+    let badge = 'flat', arrow='→';
+    if(prev){ if(r.accuracy>prev.accuracy){badge='up';arrow='↑';} else if(r.accuracy<prev.accuracy){badge='down';arrow='↓';} }
+    return `<tr><td>${nameMap[r.game]||r.game}</td><td>${r.accuracy}%</td><td><span class="badge ${badge}">${arrow}</span></td></tr>`;
+  }).join('') || `<tr><td colspan="3" class="muted">No sessions played yet today.</td></tr>`;
+}
+
+/* ================= GAME 1: Memory match ================= */
+const mmIcons = ['🌸','🐘','🍵','🌾','🪔','🦚','🌙','🐄','🌻','🥁'];
+let mmState = {};
+function setupMM(){
+  const lvl = currentLevel();
+  const chosen = mmIcons.slice().sort(()=>Math.random()-0.5).slice(0, lvl.pairs);
+  const deck = chosen.concat(chosen).sort(()=>Math.random()-0.5).map((icon,i)=>({id:i, icon, flipped:false, matched:false}));
+  mmState = {deck, flipped:[], moves:0, lock:false};
+  document.getElementById('mmLevelPill').textContent = 'Level: ' + (currentLevel()[lang]||currentLevel().en);
+  document.getElementById('mmMsg').textContent = '';
+  renderMM();
+}
+function renderMM(){
+  const grid = document.getElementById('mmGrid');
+  grid.style.gridTemplateColumns = mmState.deck.length>12 ? 'repeat(4,1fr)' : (mmState.deck.length<=8?'repeat(4,1fr)':'repeat(4,1fr)');
+  grid.innerHTML = mmState.deck.map(c=>{
+    const shown = c.flipped || c.matched;
+    return `<button class="mm-card ${shown?'':'hidden-face'} ${c.matched?'matched':''}" data-id="${c.id}" ${c.matched||mmState.lock?'':''}>${shown? c.icon : ''}</button>`;
+  }).join('');
+  grid.querySelectorAll('.mm-card').forEach(btn=>{
+    btn.addEventListener('click', ()=>flipMM(parseInt(btn.dataset.id)));
+  });
+}
+function flipMM(id){
+  if(mmState.lock) return;
+  const card = mmState.deck.find(c=>c.id===id);
+  if(!card || card.flipped || card.matched) return;
+  card.flipped = true;
+  mmState.flipped.push(card);
+  renderMM();
+  if(mmState.flipped.length===2){
+    mmState.moves++;
+    mmState.lock = true;
+    const [a,b] = mmState.flipped;
+    if(a.icon===b.icon){
+      setTimeout(()=>{
+        a.matched=true; b.matched=true; mmState.flipped=[]; mmState.lock=false;
+        document.getElementById('mmMsg').className='msg good';
+        document.getElementById('mmMsg').textContent = t('goodMatch');
+        renderMM();
+        if(mmState.deck.every(c=>c.matched)){
+          document.getElementById('mmMsg').textContent = t('allMatched');
+          const acc = Math.round((mmState.deck.length/2 / mmState.moves)*100);
+          logResult('mm', Math.min(100,acc));
+        }
+      },450);
+    } else {
+      document.getElementById('mmMsg').className='msg tryagain';
+      document.getElementById('mmMsg').textContent = t('tryAgain');
+      setTimeout(()=>{
+        a.flipped=false; b.flipped=false; mmState.flipped=[]; mmState.lock=false;
+        document.getElementById('mmMsg').textContent='';
+        renderMM();
+      },850);
+    }
+  }
+}
+document.getElementById('mmRestart').addEventListener('click', setupMM);
+
+/* ================= GAME 2: Pattern / sequence recall ================= */
+const patColors = ['c0','c1','c2','c3'];
+const patIcons = ['🌞','🌊','🌿','🪷'];
+let patState = {};
+function setupPAT(){
+  const lvl = currentLevel();
+  patState = {seq:[], userIdx:0, len:lvl.patLen, playing:false, round:1};
+  document.getElementById('patLevelPill').textContent = (t('patRound')||'Round') + ' ' + patState.round;
+  document.getElementById('patMsg').textContent = '';
+  renderPAT();
+  extendPAT();
+}
+function extendPAT(){
+  patState.seq.push(Math.floor(Math.random()*4));
+}
+function renderPAT(){
+  const grid = document.getElementById('patGrid');
+  grid.innerHTML = patColors.map((c,i)=>`<button class="pat-cell ${c}" data-i="${i}">${patIcons[i]}</button>`).join('');
+  grid.querySelectorAll('.pat-cell').forEach(btn=>{
+    btn.addEventListener('click', ()=>userPickPAT(parseInt(btn.dataset.i)));
+  });
+}
+async function playPAT(){
+  patState.playing = true;
+  patState.userIdx = 0;
+  document.getElementById('patMsg').textContent = '';
+  const cells = document.querySelectorAll('.pat-cell');
+  for(const idx of patState.seq){
+    await sleep(280);
+    cells[idx].classList.add('lit');
+    await sleep(420);
+    cells[idx].classList.remove('lit');
+  }
+  patState.playing = false;
+}
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function userPickPAT(i){
+  if(patState.playing) return;
+  const expected = patState.seq[patState.userIdx];
+  if(i===expected){
+    patState.userIdx++;
+    if(patState.userIdx===patState.seq.length){
+      document.getElementById('patMsg').className='msg good';
+      document.getElementById('patMsg').textContent = t('patNext');
+      const acc = Math.round(100 - (patState.round-1));
+      logResult('pat', Math.max(50,Math.min(100,acc)));
+      patState.round++;
+      document.getElementById('patLevelPill').textContent = (t('patRound')||'Round') + ' ' + patState.round;
+      extendPAT();
+      setTimeout(()=>playPAT(), 800);
+    }
+  } else {
+    document.getElementById('patMsg').className='msg tryagain';
+    document.getElementById('patMsg').textContent = t('patWrong');
+    logResult('pat', Math.max(20, 60-patState.round*5));
+    patState.userIdx = 0;
+    setTimeout(()=>playPAT(), 900);
+  }
+}
+document.getElementById('patPlayBtn').addEventListener('click', playPAT);
+document.getElementById('patRestart').addEventListener('click', setupPAT);
+
+/* ================= GAME 3: Daily routine recall ================= */
+const routineSteps = [
+  {id:'wake', en:'Wake up', hi:'जागना', as:'সাৰ পোৱা', icon:'🛏️'},
+  {id:'brush', en:'Brush teeth', hi:'दांत साफ करना', as:'দাঁত মাজা', icon:'🪥'},
+  {id:'bath', en:'Take a bath', hi:'नहाना', as:'গা ধোৱা', icon:'🛁'},
+  {id:'breakfast', en:'Eat breakfast', hi:'नाश्ता करना', as:'ৰাতিপুৱাৰ আহাৰ', icon:'🍽️'},
+  {id:'medicine', en:'Take medicine', hi:'दवा लेना', as:'ঔষধ খোৱা', icon:'💊'},
+  {id:'walk', en:'Morning walk', hi:'सुबह की सैर', as:'ৰাতিপুৱাৰ খোজকঢ়া', icon:'🚶'}
+];
+let rtState = {};
+function setupRT(){
+  const order = routineSteps.map(s=>s.id).slice();
+  const shuffled = order.slice().sort(()=>Math.random()-0.5);
+  rtState = {order, placed:[], shuffled};
+  document.getElementById('rtMsg').className='msg';
+  document.getElementById('rtMsg').textContent = t('rtInstruction');
+  renderRT();
+}
+function renderRT(){
+  const target = document.getElementById('rtTarget');
+  target.innerHTML = rtState.placed.map((id,i)=>{
+    const s = routineSteps.find(x=>x.id===id);
+    return `<div class="rt-chip"><span class="n">${i+1}</span>${s.icon} ${s[lang]||s.en}</div>`;
+  }).join('');
+  const source = document.getElementById('rtSource');
+  source.innerHTML = rtState.shuffled.map(id=>{
+    const s = routineSteps.find(x=>x.id===id);
+    const placed = rtState.placed.includes(id);
+    return `<button class="rt-chip ${placed?'placed':''}" data-id="${id}" ${placed?'disabled':''}>${s.icon} ${s[lang]||s.en}</button>`;
+  }).join('');
+  source.querySelectorAll('.rt-chip:not(.placed)').forEach(btn=>{
+    btn.addEventListener('click', ()=>pickRT(btn.dataset.id));
+  });
+}
+function pickRT(id){
+  const expected = rtState.order[rtState.placed.length];
+  if(id===expected){
+    rtState.placed.push(id);
+    document.getElementById('rtMsg').className='msg good';
+    document.getElementById('rtMsg').textContent = t('rtGood');
+    renderRT();
+    if(rtState.placed.length===rtState.order.length){
+      document.getElementById('rtMsg').textContent = t('rtDone');
+      logResult('rt', 100);
+    }
+  } else {
+    document.getElementById('rtMsg').className='msg tryagain';
+    document.getElementById('rtMsg').textContent = t('tryAgain');
+    logResult('rt', Math.max(30, 90 - rtState.placed.length*10));
+  }
+}
+document.getElementById('rtRestart').addEventListener('click', setupRT);
+
+/* ---------- init ---------- */
+applyStaticText();
+renderStats();
+showView('home');
+</script>
+</body>
+</html>
